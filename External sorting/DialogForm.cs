@@ -27,7 +27,7 @@ namespace External_sorting
 
         private void buttonOk_Click(object sender, EventArgs e)
         {
-            Amount = int.Parse(TextBox.Text);
+            Amount = (int)numericUpDown.Value;
             DialogResult = DialogResult.OK;
         }
     }

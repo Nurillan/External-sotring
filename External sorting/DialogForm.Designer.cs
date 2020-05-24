@@ -28,22 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.TextBox = new System.Windows.Forms.MaskedTextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
+            this.numericUpDown = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).BeginInit();
             this.SuspendLayout();
-            // 
-            // TextBox
-            // 
-            this.TextBox.Location = new System.Drawing.Point(61, 72);
-            this.TextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.TextBox.Mask = "00000";
-            this.TextBox.Name = "TextBox";
-            this.TextBox.Size = new System.Drawing.Size(53, 26);
-            this.TextBox.TabIndex = 0;
-            this.TextBox.ValidatingType = typeof(int);
             // 
             // label1
             // 
@@ -74,41 +64,57 @@
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
-            // label2
+            // numericUpDown
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(121, 78);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(64, 15);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "thousands";
+            this.numericUpDown.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.numericUpDown.Location = new System.Drawing.Point(58, 60);
+            this.numericUpDown.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.numericUpDown.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.numericUpDown.Name = "numericUpDown";
+            this.numericUpDown.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDown.TabIndex = 4;
+            this.numericUpDown.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
             // 
             // DialogForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(233, 177);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.numericUpDown);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOk);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.TextBox);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "DialogForm";
             this.Text = "Choose the amout";
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.MaskedTextBox TextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonOk;
         private System.Windows.Forms.Button buttonCancel;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.NumericUpDown numericUpDown;
     }
 }

@@ -167,22 +167,22 @@ namespace External_sorting
             long n = file.Length / 4; //length in bytes, int32 take 4 bytes, n is the amount of numbers
             Sequence[] mas = new Sequence[3];
             Sequence f = new Sequence(FileName);
-            
             for (int i = 0; i < mas.Length; i++)
             {
                 string name = "Temp" + i.ToString();
                 mas[i] = new Sequence(name);
             }
+
             int lenght = 1;
             do
             {
                 Distribute(f, lenght, mas);
-                AmountOfPasses += 1;
                 Merge(f, lenght, mas);
-                AmountOfPasses += 3;
                 lenght *= mas.Length;
+                AmountOfPasses += 1;
             }
             while (lenght < n);
+
             foreach (Sequence s in mas)
             {
                 s.file.Delete();

@@ -44,14 +44,12 @@ namespace External_sorting
                 string random = "rand";
                 string reverse = "rev";
                 Handler.MakeRandomFile(random);
-                MessageBox.Show(Handler.PrintFile(random));
                 Handler.MakeReverseFile(random, reverse);
-                MessageBox.Show(Handler.PrintFile(reverse));
                 Handler.SortFile(random);
                 int randPas = Handler.AmountOfPasses;
                 Handler.SortFile(reverse);
                 int revPas = Handler.AmountOfPasses;
-                dataGridView.Rows.Add(form.Amount, randPas, revPas);
+                dataGridView.Rows.Add(Handler.count, randPas, revPas);
             }
         }
     }

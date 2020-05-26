@@ -9,74 +9,77 @@ namespace External_sorting
 {
     class Sequence: IDisposable
     {
-        public FileInfo file { get; set; }
-        private BinaryReader reader { get; set; }
-        private BinaryWriter writer { get; set; }
-        public Int32 element { get; set; }
-        public bool EndOfFile { get; set; }
-        public bool EndOfSection { get; set; }
-        private int remainder;
+        private BinaryReader Reader { get; set; }
+        private BinaryWriter Writer { get; set; }
+        private int Remainder { get; set; }
+        public FileInfo File { get; }
+        public Int32 Element { get; private set; }
 
         public Sequence(string FilePath)
         {
-            file = new FileInfo(FilePath);
+            File = new FileInfo(FilePath);
         }
 
-        public void StartRead(int length)
+        public void NewRun(int lenght)
         {
-            writer?.Close();
-            reader = new BinaryReader(File.Open(file.FullName, FileMode.Open));
-            if (reader?.BaseStream.Position != reader.BaseStream.Length)
-                remainder = length;
-            CheckEnd();
+            Remainder = lenght;
         }
 
-        public void StartWrite()
+        public void StartRead(int lenght)
         {
-            reader?.Close();
-            writer = new BinaryWriter(File.Open(file.FullName, FileMode.Create));
+            Reader = new BinaryReader(System.IO.File.Open(File.FullName, FileMode.Open));
+            NewRun(lenght);
         }
 
-        public void StartRun(int lenght)
-        {
-            remainder = lenght;
-            EndOfSection = EndOfFile || (remainder == 0);
-        }
-        
         public void Copy(Sequence s)
         {
-            s.writer.Write(element);
-            remainder--;
-            CheckEnd();
+            ReadElem();
+            Remainder--;
+            s.Writer.Write(Element);
+        }
+
+        private void ReadElem()
+        {
+            if (!EndOfSeries())
+                Element = Reader.ReadInt32();
         }
 
         public void CopyAll(Sequence s)
         {
             do
-            {
                 Copy(s);
-            }
-            while (!EndOfSection);
+            while (!EndOfSeries());
         }
 
-        public void CheckEnd()
+        public void StopRead()
         {
-            EndOfFile = reader?.BaseStream.Position == reader.BaseStream.Length;
-            if (!EndOfFile)
-            {
-                element = reader.ReadInt32();
-            }
-            else
-            {
-                remainder = 0;
-            }
-            EndOfSection = EndOfFile || (remainder == 0);
+            Reader.Close();
+        }
+
+        public void StartWrite()
+        {
+            Writer = new BinaryWriter(System.IO.File.Open(File.FullName, FileMode.Create));
+        }
+
+        public void StopWrite()
+        {
+            Writer.Close();
+        }
+        
+        public bool EndOfFile()
+        {
+            return Reader.BaseStream.Position == Reader.BaseStream.Length;
+        }
+
+        public bool EndOfSeries()
+        {
+            return EndOfFile() || (Remainder == 0);
         }
 
         public void Dispose()
         {
-            reader?.Dispose();
-            writer?.Dispose();
+            Reader?.Dispose();
+            Writer?.Dispose();
         }
     }
 }

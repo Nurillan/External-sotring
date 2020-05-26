@@ -71,93 +71,76 @@ namespace External_sorting
                 s.StartWrite();
             }
 
-            while (!f.EndOfFile)
+            int i;
+            while (!f.EndOfFile())
             {
-                foreach (Sequence s in mas)
+                i = 0;
+                while (!f.EndOfFile() && i < mas.Length)
                 {
-                    f.CopyAll(s);
-                    f.StartRun(lenght);
-                    if (f.EndOfFile)
-                        return;
+                    f.CopyAll(mas[i]);
+                    f.NewRun(lenght);
+                    i++;
                 }
             }
 
-            f.Dispose();
+            f.StopRead();
             foreach (Sequence s in mas)
             {
-                s.Dispose();
+                s.StopWrite();
             }
         }
 
         public static void Merge(Sequence f, int lenght, params Sequence[] mas)
         {
-            foreach(Sequence s in mas)
+            f.StartWrite();
+            foreach (Sequence s in mas)
             {
                 s.StartRead(lenght);
             }
-            int UndoneSection = mas.Length;
-            int UndoneFile = mas.Length;
-
-            f.StartWrite();
             
-            while(UndoneFile > 0)
+            while(FirstUndone(mas) > -1)
             {
-                while(UndoneSection > 0)
+                while(FirstUndone(mas) > -1)
                 {
                     int i = GetIndexOfMax(mas);
                     mas[i].Copy(f);
-                    UndoneSection = GetUndoneSection(mas);
                 }
 
                 foreach (Sequence s in mas)
                 {
-                    s.StartRun(lenght);
+                    s.NewRun(lenght);
                 }
-                UndoneSection = GetUndoneSection(mas);
-                UndoneFile = GetUndoneFile(mas);
             }
 
             foreach (Sequence s in mas)
             {
-                s.Dispose();
+                s.StopRead();
             }
-            f.Dispose();
+            f.StopWrite();
         }
 
         private static int GetIndexOfMax(Sequence[] mas)
         {
-            int max = 0;
-            while (mas[max].EndOfSection)
-                max++;
+            int max = FirstUndone(mas);
+            if (max == -1)
+                throw new Exception("no matching items");
 
             for (int j = max + 1; j < mas.Length; j++)
             {
-                if (!mas[j].EndOfSection && (mas[j].element > mas[max].element))
+                if ((mas[j].EndOfSeries() == false) && (mas[j].Element > mas[max].Element))
                     max = j;
             }
             return max;
         }
 
-        private static int GetUndoneSection(Sequence[] mas)
+        private static int FirstUndone(Sequence[] mas)
         {
-            int sum = 0;
-            foreach(Sequence s in mas)
-            {
-                if (!s.EndOfSection)
-                    sum++;
-            }
-            return sum;
-        }
-
-        private static int GetUndoneFile(Sequence[] mas)
-        {
-            int sum = 0;
-            foreach (Sequence s in mas)
-            {
-                if (!s.EndOfFile)
-                    sum++;
-            }
-            return sum;
+            int first = 0;
+            while (first < mas.Length && mas[first].EndOfSeries() == true)
+                first++;
+            if (first == mas.Length)
+                return -1;
+            else return first;
         }
 
         public static void SortFile(string FileName)
@@ -165,13 +148,8 @@ namespace External_sorting
             AmountOfPasses = 0;
             FileInfo file = new FileInfo(FileName);
             long n = file.Length / 4; //length in bytes, int32 take 4 bytes, n is the amount of numbers
-            Sequence[] mas = new Sequence[3];
             Sequence f = new Sequence(FileName);
-            for (int i = 0; i < mas.Length; i++)
-            {
-                string name = "Temp" + i.ToString();
-                mas[i] = new Sequence(name);
-            }
+            Sequence[] mas = InitFiles(3);
 
             int lenght = 1;
             do
@@ -185,11 +163,23 @@ namespace External_sorting
 
             foreach (Sequence s in mas)
             {
-                s.file.Delete();
+                s.File.Delete();
                 s.Dispose();
             }
-            f.file.Delete();
+            f.File.Delete();
             f.Dispose();
+        }
+
+        private static Sequence[] InitFiles(int count)
+        {
+            Sequence[] mas = new Sequence[count];
+            string name;
+            for (int i = 0; i < count; i++)
+            {
+                name = "Temp" + i.ToString();
+                mas[i] = new Sequence(name);
+            }
+            return mas;
         }
 
     }

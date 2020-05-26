@@ -14,6 +14,7 @@ namespace External_sorting
         private int Remainder { get; set; }
         public FileInfo File { get; }
         public Int32 Element { get; private set; }
+        public bool ReadyForCopy { get; private set; }
 
         public Sequence(string FilePath)
         {
@@ -25,30 +26,39 @@ namespace External_sorting
             Remainder = lenght;
         }
 
-        public void StartRead(int lenght)
+        public void StartRead()
         {
             Reader = new BinaryReader(System.IO.File.Open(File.FullName, FileMode.Open));
-            NewRun(lenght);
         }
 
-        public void Copy(Sequence s)
-        {
-            ReadElem();
-            Remainder--;
-            s.Writer.Write(Element);
-        }
-
-        private void ReadElem()
+        public void ReadElem()
         {
             if (!EndOfSeries())
+            {
                 Element = Reader.ReadInt32();
+                ReadyForCopy = true;
+            }                
+        }
+
+        public void CopyElemTo(Sequence s)
+        {
+            if (ReadyForCopy)
+            {
+                s.WriteElem(Element);
+                Remainder--;
+                ReadyForCopy = false;
+            }
         }
 
         public void CopyAll(Sequence s)
         {
+            ReadElem();
             do
-                Copy(s);
-            while (!EndOfSeries());
+            {
+                CopyElemTo(s);
+                ReadElem();
+            }
+            while (ReadyForCopy);
         }
 
         public void StopRead()
@@ -59,6 +69,11 @@ namespace External_sorting
         public void StartWrite()
         {
             Writer = new BinaryWriter(System.IO.File.Open(File.FullName, FileMode.Create));
+        }
+
+        public void WriteElem(Int32 element)
+        {
+            Writer.Write(element);
         }
 
         public void StopWrite()

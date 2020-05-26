@@ -40,16 +40,18 @@ namespace External_sorting
             DialogForm form = new DialogForm();
             if (form.ShowDialog() == DialogResult.OK)
             {
-                Handler.count = form.Amount;
+                Handler.NumberCount = form.Amount;
                 string random = "rand";
                 string reverse = "rev";
                 Handler.MakeRandomFile(random);
+                MessageBox.Show(Handler.PrintFile(random));
                 Handler.MakeReverseFile(random, reverse);
                 Handler.SortFile(random);
-                int randPas = Handler.AmountOfPasses;
+                MessageBox.Show(Handler.PrintFile(random));
+                string randPas = Handler.time.TotalMilliseconds.ToString() + " msec";
                 Handler.SortFile(reverse);
-                int revPas = Handler.AmountOfPasses;
-                dataGridView.Rows.Add(Handler.count, randPas, revPas);
+                string revPas = Handler.time.TotalMilliseconds.ToString() + " msec";
+                dataGridView.Rows.Add(Handler.NumberCount, randPas, revPas);
             }
         }
     }

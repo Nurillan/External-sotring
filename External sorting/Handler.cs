@@ -4,14 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace External_sorting
 {
     static class Handler
     {
-        public static int max = 10000;
-        public static int count = 1000;
-        public static int AmountOfPasses { get; private set; }
+        public static int MaxNumber = 10000;
+        public static int NumberCount = 1000;
+        public static int FilesCount = 3;
+        public static TimeSpan time { get; private set; }
 
         public static void MakeRandomFile(string FileName)
         {
@@ -19,9 +21,9 @@ namespace External_sorting
             {
                 Random random = new Random();
                 int element;
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < NumberCount; i++)
                 {
-                    element = random.Next(max);
+                    element = random.Next(MaxNumber);
                     writer.Write(element);
                 }
             }
@@ -29,7 +31,7 @@ namespace External_sorting
 
         public static void MakeReverseFile(string SourceFile, string DestFile)
         {
-            Int32[] mas = new Int32[count];
+            Int32[] mas = new Int32[NumberCount];
             int i = 0;
             using (BinaryReader reader = new BinaryReader(File.Open(SourceFile, FileMode.Open)))
             {
@@ -65,7 +67,8 @@ namespace External_sorting
 
         public static void Distribute(Sequence f, int lenght, params Sequence[] mas)
         {
-            f.StartRead(lenght);
+            f.StartRead();
+            f.NewRun(lenght);
             foreach (Sequence s in mas)
             {
                 s.StartWrite();
@@ -95,20 +98,24 @@ namespace External_sorting
             f.StartWrite();
             foreach (Sequence s in mas)
             {
-                s.StartRead(lenght);
+                s.StartRead();
+                s.NewRun(lenght);
+                s.ReadElem();
             }
             
-            while(FirstUndone(mas) > -1)
+            while(FirstReady(mas) > -1)
             {
-                while(FirstUndone(mas) > -1)
+                while (FirstReady(mas) > -1)
                 {
                     int i = GetIndexOfMax(mas);
-                    mas[i].Copy(f);
+                    mas[i].CopyElemTo(f);
+                    mas[i].ReadElem();
                 }
 
                 foreach (Sequence s in mas)
                 {
                     s.NewRun(lenght);
+                    s.ReadElem();
                 }
             }
 
@@ -121,22 +128,22 @@ namespace External_sorting
 
         private static int GetIndexOfMax(Sequence[] mas)
         {
-            int max = FirstUndone(mas);
+            int max = FirstReady(mas);
             if (max == -1)
                 throw new Exception("no matching items");
 
             for (int j = max + 1; j < mas.Length; j++)
             {
-                if ((mas[j].EndOfSeries() == false) && (mas[j].Element > mas[max].Element))
+                if ((mas[j].ReadyForCopy) && (mas[j].Element > mas[max].Element))
                     max = j;
             }
             return max;
         }
 
-        private static int FirstUndone(Sequence[] mas)
+        private static int FirstReady(Sequence[] mas)
         {
             int first = 0;
-            while (first < mas.Length && mas[first].EndOfSeries() == true)
+            while (first < mas.Length && mas[first].ReadyForCopy == false)
                 first++;
             if (first == mas.Length)
                 return -1;
@@ -145,11 +152,14 @@ namespace External_sorting
 
         public static void SortFile(string FileName)
         {
-            AmountOfPasses = 0;
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+
             FileInfo file = new FileInfo(FileName);
             long n = file.Length / 4; //length in bytes, int32 take 4 bytes, n is the amount of numbers
+
             Sequence f = new Sequence(FileName);
-            Sequence[] mas = InitFiles(3);
+            Sequence[] mas = InitFiles(FilesCount);
 
             int lenght = 1;
             do
@@ -157,17 +167,19 @@ namespace External_sorting
                 Distribute(f, lenght, mas);
                 Merge(f, lenght, mas);
                 lenght *= mas.Length;
-                AmountOfPasses += 1;
             }
             while (lenght < n);
 
             foreach (Sequence s in mas)
             {
-                s.File.Delete();
+                //s.File.Delete();
                 s.Dispose();
             }
-            f.File.Delete();
+            //.File.Delete();
             f.Dispose();
+
+            watch.Stop();
+            time = watch.Elapsed;
         }
 
         private static Sequence[] InitFiles(int count)

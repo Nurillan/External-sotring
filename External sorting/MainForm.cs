@@ -44,10 +44,8 @@ namespace External_sorting
                 string random = "rand";
                 string reverse = "rev";
                 Handler.MakeRandomFile(random);
-                MessageBox.Show(Handler.PrintFile(random));
                 Handler.MakeReverseFile(random, reverse);
                 Handler.SortFile(random);
-                MessageBox.Show(Handler.PrintFile(random));
                 string randPas = Handler.time.TotalMilliseconds.ToString() + " msec";
                 Handler.SortFile(reverse);
                 string revPas = Handler.time.TotalMilliseconds.ToString() + " msec";

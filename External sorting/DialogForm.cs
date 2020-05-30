@@ -27,7 +27,11 @@ namespace External_sorting
 
         private void buttonOk_Click(object sender, EventArgs e)
         {
-            Amount = (int)numericUpDown.Value;
+            if (!int.TryParse(textBox.Text, out Amount) || Amount < 1 || Amount > 10000)
+            {
+                MessageBox.Show("Enter approptiate amount of numbers (1-10000)");
+                return;
+            }
             DialogResult = DialogResult.OK;
         }
     }

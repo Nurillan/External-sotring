@@ -172,10 +172,10 @@ namespace External_sorting
 
             foreach (Sequence s in mas)
             {
-                //s.File.Delete();
+                s.File.Delete();
                 s.Dispose();
             }
-            //.File.Delete();
+            f.File.Delete();
             f.Dispose();
 
             watch.Stop();
